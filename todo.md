@@ -60,24 +60,14 @@ This project now demonstrates:
 
 
 ## push commands
-feat → new feature
-
-fix → bug fix
-
-refactor → code restructure, no behavior change
-
-style → formatting, naming, whitespace
-
-perf → performance improvement
-
-test → adding/updating tests
-
-docs → documentation changes
-
-chore → maintenance tasks, tooling
-
-build → build system changes
-
-ci → continuous integration configs
-
-revert → revert previous commit
+- feat → new feature
+- fix → bug fix
+- refactor → code restructure, no behavior change
+- style → formatting, naming, whitespace
+- perf → performance improvement
+- test → adding/updating tests
+- docs → documentation changes
+- chore → maintenance tasks, tooling
+- build → build system changes
+- ci → continuous integration configs
+- revert → revert previous commit
