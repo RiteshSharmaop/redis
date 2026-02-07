@@ -9,3 +9,12 @@
 9. Singleton Pattern
 10. Bitwise Operators '|='
 11. std::
+
+
+
+<!-- Classes -->
+RediaServer class
+
+RedisDatabase class
+
+RedisCommandHandler class
