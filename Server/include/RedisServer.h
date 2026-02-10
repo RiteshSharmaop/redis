@@ -10,6 +10,7 @@
 #include<thread>
 #include<vector>
 #include<cstring>
+#include<signal.h>
 
 class RedisServer{
     public:
@@ -21,6 +22,9 @@ class RedisServer{
         int port;
         int server_socket;
         std::atomic<bool> running;
+
+        // Setup signal handling for gracefull shutdown(ctr + c)
+        void setupSignalHandler();
 };
 
 
