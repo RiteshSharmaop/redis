@@ -18,3 +18,17 @@ RediaServer class
 RedisDatabase class
 
 RedisCommandHandler class
+
+
+
+
+# Hash or encode  the data before storing in db
+
+- encrypt using key
+- decrypt using kty
+
+ex:  key(####)
+    name ritesh   
+    787289 7827873 (encrypt)
+    name ritesh (decrypt)  
+
