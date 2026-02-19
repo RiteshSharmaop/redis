@@ -24,12 +24,12 @@ class RedisDatabase{
 
         // Key/Value Operations
         void set(const std::string &key , const std::string &value);
-        bool get(const std::string &key , const std::string &value);
+        bool get(const std::string &key , std::string &value);
         std::vector<std::string> keys();
         std::string type(const std::string &key);
         bool del(const std::string &key);
         // expire 
-        bool expire(const std::string &key , const std::string seconds);
+        bool expire(const std::string &key , std::string seconds);
         // rename 
         bool rename(const std::string &oldKey , const std::string newKey);
 

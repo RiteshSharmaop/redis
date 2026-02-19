@@ -77,6 +77,10 @@ ex:  key(####)
 - **RENAME**  
   *Use case:* When restructuring keys during a migration or data reorganization, use `RENAME` to change the key’s name without losing its data.
 
+## edge case
+  - set name "Riteh Sharma"  it will store ritesh sharma
+  but if we restart cli then it will remove sharma and it will only pring ritesh
+
 ---
 
 ### List Operations
