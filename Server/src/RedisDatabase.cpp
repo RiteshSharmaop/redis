@@ -134,11 +134,11 @@ bool RedisDatabase::rename(const std::string &oldKey , const std::string newKey)
     return false; // Should not reach here
 }
 
-
-
-
-// Key-Value Operations
 // List Operations
+
+
+
+
 // Hash Operations
     
 
