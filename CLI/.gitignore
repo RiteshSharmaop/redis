@@ -2,3 +2,5 @@ build/
 bin/
 *.log
 .env
+dump.rdb
+dump.my_rdb

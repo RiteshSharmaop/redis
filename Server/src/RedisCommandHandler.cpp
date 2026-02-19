@@ -119,12 +119,12 @@ std::string RedisCommandHandler::processCommand(const std::string& commandLine){
         for(const auto &key : allKeys)
             response << "$" << key.size() << "\r\n" << key << "\r\n";
         
-    } else if(cmd == "TYPES"){
+    } else if(cmd == "TYPE"){
         if(tokens.size() < 2) 
             response << "-Error: TYPES requires key\r\n";
         else 
             response << "+" << db.type(tokens[1]) << "\r\n";   
-    } else if(cmd == "DELETE" || cmd == "UNLINK"){
+    } else if(cmd == "DELETE" || cmd == "UNLINK" || cmd == "DEL"){
         if(tokens.size() < 2)
             response << "-Error: " << cmd << " requires key\r\n";
         else {

@@ -271,8 +271,6 @@ Concepts,UseCases&Tests.md
 
 ## 👨‍💻 Authors & Credits
 
-### Redis Server & Redis CLI Client
-
 * **Ritesh Sharma**
 
 ---
