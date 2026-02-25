@@ -134,11 +134,158 @@ bool RedisDatabase::rename(const std::string &oldKey , const std::string newKey)
     return false; // Should not reach here
 }
 
-
-
-
-// Key-Value Operations
 // List Operations
+ssize_t RedisDatabase::llen(const std::string &key){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = list_store.find(key);
+    if(it != list_store.end()){
+        return it->second.size();
+    }
+    return -1; // Key does not exist
+}
+bool RedisDatabase::lpush(const std::string &key , const std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    // Push value to the front of the list
+    list_store[key].insert(list_store[key].begin(), value);
+    return true;
+}
+bool RedisDatabase::rpush(const std::string &key , const std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    // Push value to the back of the list
+    list_store[key].push_back(value);
+    return true;
+}
+bool RedisDatabase::lpop(const std::string &key , std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = list_store.find(key);
+    if(it != list_store.end() && !it->second.empty()){
+        value = it->second.front();
+        it->second.erase(it->second.begin());
+        return true;
+    }
+    return false;
+}
+bool RedisDatabase::rpop(const std::string &key , std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = list_store.find(key);
+    if(it != list_store.end() && !it->second.empty()){
+        value = it->second.back();
+        it->second.pop_back();
+        return true;
+    }
+    return false;
+    
+}
+bool RedisDatabase::lindex(const std::string &key , int &index , std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = list_store.find(key);
+    if(it == list_store.end()) return false; // Key does not exist
+
+    const auto &list = it->second;
+    int size = list.size();
+    if(index < 0) index += size; // Handle negative index
+    if(index >= 0 && index < size){
+        value = list[index];
+        return true;
+    }
+    return false;
+}
+int RedisDatabase::lrem(const std::string &key , const std::string &value , int count = 0){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = list_store.find(key);
+    if(it == list_store.end()) return 0; // Key does not exist
+
+    auto &list = it->second;
+    int removedCount = 0;
+    if(count == 0){
+        // Remove all occurrences
+        list.erase(std::remove(list.begin(), list.end(), value), list.end());
+        removedCount = std::count(list.begin(), list.end(), value);
+    }else if(count > 0){
+        // Remove first count occurrences
+        for(auto it = list.begin(); it != list.end() && removedCount < count;){
+            if(*it == value){
+                it = list.erase(it);
+                removedCount++;
+            }else{
+                ++it;   
+            }
+        }
+    }else {
+        // Remove last count occurrences
+        for(auto revIt = list.rbegin(); revIt != list.rend() && removedCount < -count;){
+            if(*revIt == value){
+                auto forwardIt = std::next(revIt).base(); // Convert reverse iterator to forward iterator
+                --forwardIt; // Move back to the correct position for erasing
+                forwardIt = list.erase(forwardIt);
+                revIt = std::reverse_iterator<std::vector<std::string>::iterator>(forwardIt);
+                removedCount++;
+            }else{
+                ++revIt;   
+            }
+            
+        }
+    }
+    return removedCount;
+}
+bool RedisDatabase::lset(const std::string &key , int &index ,const std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = list_store.find(key);
+    if(it == list_store.end()) return false; // Key does not exist
+
+    auto list = it->second;
+    int size = list.size();
+    if(index < 0) index += size; // Handle negative index
+    if(index >= 0 && index < size){
+        list[index] = value;
+        return true;
+    }
+    return false;
+}
+bool RedisDatabase::lrange(const std::string &key , const std::string &start , const std::string &stop , std::vector<std::string> &values){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = list_store.find(key);
+    if(it != list_store.end()){
+        const auto &list = it->second;
+        int size = list.size();
+        int start_index = 0;
+        int end_index = size - 1;
+
+        // Convert start and stop to integer indices
+        try {
+            start_index = std::stoi(start);
+            end_index = std::stoi(stop);
+        } catch (const std::invalid_argument& e) {
+            return false; // Invalid start or stop value
+        }
+
+        // Handle negative indices
+        if(start_index < 0) start_index += size;
+        if(end_index < 0) end_index += size;
+
+        // Clamp indices to valid range
+        start_index = std::max(0, start_index);
+        end_index = std::min(size - 1, end_index);
+
+        if(start_index > end_index) {
+            return false; // Invalid range
+        }
+
+        values.clear();
+        for(int i = start_index; i <= end_index; ++i){
+            values.push_back(list[i]);
+        }
+        
+        return true;
+    }
+    return false;
+}
+
+
+
+
+
+
 // Hash Operations
     
 

@@ -8,6 +8,7 @@
 #include<vector>
 #include<sstream>
 #include<chrono>
+#include<algorithm>
 
 
 class RedisDatabase{
@@ -32,6 +33,22 @@ class RedisDatabase{
         bool expire(const std::string &key , std::string seconds);
         // rename 
         bool rename(const std::string &oldKey , const std::string newKey);
+
+
+
+        // List operations
+        ssize_t llen(const std::string &key);
+        bool lpush(const std::string &key , const std::string &value);
+        bool rpush(const std::string &key , const std::string &value);
+        bool lpop(const std::string &key , std::string &value);
+        bool rpop(const std::string &key , std::string &value);
+        bool lindex(const std::string &key , int &index , std::string &value);
+        int lrem(const std::string &key , const std::string &value , int count = 0);
+        bool lset(const std::string &key , int &index ,const std::string &value);
+        bool lrange(const std::string &key , const std::string &start , const std::string &stop , std::vector<std::string> &values);
+
+
+
 
     private:
         RedisDatabase() = default;
