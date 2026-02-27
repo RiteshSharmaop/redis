@@ -1,0 +1,9 @@
+build/
+bin/
+*.log
+.env
+
+my_redis_server
+dump.rdb
+dump.my_rdb
+dump.myrdb

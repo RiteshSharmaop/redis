@@ -8,6 +8,7 @@ int main(int argc , char* argv[]) {
     std::string host = "127.0.0.1";
     int port = 6379;
     int i = 1;
+    std::vector<std::string> commandArgs;
 
     /*
     We are reading command-line input given by the user 
@@ -22,9 +23,15 @@ int main(int argc , char* argv[]) {
         }else if(arg == "-p" && i+1 < argc) {
             port = std::stoi(argv[++i]);
         }else {
-            std::cerr << "❌ Invalid argument: " << arg << "\n";
-            std::cerr << "Usage: ./app [-h host] [-p port]\n";
-            return 1;  // exit with error
+            // remaining args
+            while(i < argc){
+                commandArgs.push_back(argv[i]);
+                i++;
+            }
+            break;
+            // std::cerr << "❌ Invalid argument: " << arg << "\n";
+            // std::cerr << "Usage: ./app [-h host] [-p port]\n";
+            // return 1;  // exit with error
         }
         
         ++i;
@@ -34,7 +41,11 @@ int main(int argc , char* argv[]) {
     
     // Handle REPL and one-shot command mode
     CLI cli(host , port);
-    cli.run();
+    // if(!commandArgs.empty()){
+    //     cli.executeCommand(commandArgs);  // execute command immediatly
+    // }else {
+        // }
+    cli.run(commandArgs);  // launche REPL mode
     return 0;
 
 
