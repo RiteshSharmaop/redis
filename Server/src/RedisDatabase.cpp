@@ -288,10 +288,86 @@ bool RedisDatabase::lrange(const std::string &key , const std::string &start , c
 
 
 
-
-
-
 // Hash Operations
+
+bool RedisDatabase::hset(const std::string &key , const std::string &field , const std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    hash_store[key][field] = value;
+    return true;
+}
+bool RedisDatabase::hget(const std::string &key , const std::string &field , std::string &value){
+    std::lock_guard<std::mutex> lock(db_mutex); 
+    auto it = hash_store.find(key);
+    if(it != hash_store.end()){
+        auto field_it = it->second.find(field);
+        if(field_it != it->second.end()){
+            value = field_it->second;
+            return true;
+        }
+    }
+    return false;
+}
+bool RedisDatabase::hdel(const std::string &key , const std::string &field){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = hash_store.find(key);
+    if(it != hash_store.end()){
+        return it->second.erase(field) > 0;
+    }
+    return false;
+}
+std::unordered_map<std::string , std::string> RedisDatabase::hgetall(const std::string &key){
+    std::lock_guard<std::mutex> lock(db_mutex); 
+    auto it = hash_store.find(key);
+    if(it != hash_store.end()){
+        return it->second;
+    }
+    return {};
+}
+std::vector<std::string> RedisDatabase::hkeys(const std::string &key){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    std::vector<std::string> keys;
+    auto it = hash_store.find(key);
+    if(it != hash_store.end()){
+        for(const auto &field_val : it->second){
+            keys.push_back(field_val.first);
+        }
+    }
+    return keys;
+}
+std::vector<std::string> RedisDatabase::hvals(const std::string &key){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    std::vector<std::string> values;
+    auto it = hash_store.find(key);
+    if(it != hash_store.end()){
+        for(const auto &field_val : it->second){
+            values.push_back(field_val.second);
+        }
+    }
+    return values;
+}
+size_t RedisDatabase::hlen(const std::string &key){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = hash_store.find(key);
+
+    return it != hash_store.end() ? it->second.size() : 0;
+}
+bool RedisDatabase::hmset(const std::string &key , const std::vector<std::pair<std::string , std::string>> &fieldValues){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    for(const auto &field_val : fieldValues){
+        hash_store[key][field_val.first] = field_val.second;
+    }
+    return true;
+}
+bool RedisDatabase::hexists(const std::string &key , const std::string &field){
+    std::lock_guard<std::mutex> lock(db_mutex);
+    auto it = hash_store.find(key);
+    if(it != hash_store.end()){
+        return it->second.find(field) != it->second.end();
+    }
+    return false;
+}
+
+
     
 
 /*
