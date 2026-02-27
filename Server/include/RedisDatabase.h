@@ -9,6 +9,7 @@
 #include<sstream>
 #include<chrono>
 #include<algorithm>
+#include <sys/types.h>
 
 
 class RedisDatabase{
@@ -38,8 +39,8 @@ class RedisDatabase{
 
         // List operations
         ssize_t llen(const std::string &key);
-        bool lpush(const std::string &key , const std::string &value);
-        bool rpush(const std::string &key , const std::string &value);
+        bool lpush(const std::string &key , const std::vector<std::string> &values);
+        bool rpush(const std::string &key , const std::vector<std::string> &values);
         bool lpop(const std::string &key , std::string &value);
         bool rpop(const std::string &key , std::string &value);
         bool lindex(const std::string &key , int &index , std::string &value);

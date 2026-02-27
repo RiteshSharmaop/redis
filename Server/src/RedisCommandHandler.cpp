@@ -134,7 +134,8 @@ static std::string handleRename(RedisDatabase &db , const std::vector<std::strin
 
 static std::string handleLPush(RedisDatabase &db , const std::vector<std::string> &tokens){  
     if(tokens.size() < 3) return "-Error: LPUSH requires key and value\r\n";
-    db.lpush(tokens[1] , tokens[2]);
+    std::vector<std::string> values(tokens.begin() + 2 , tokens.end());
+    db.lpush(tokens[1] , values);
     ssize_t len = db.llen(tokens[1]);
     return ":" + std::to_string(len) + "\r\n";
 }
@@ -142,7 +143,9 @@ static std::string handleLPush(RedisDatabase &db , const std::vector<std::string
 static std::string handleRPush(RedisDatabase &db , const std::vector<std::string> &tokens){  
     if(tokens.size() < 3) 
         return "-Error: RPUSH requires key and value\r\n";
-    db.rpush(tokens[1] , tokens[2]);
+
+    std::vector<std::string> values(tokens.begin() + 2 , tokens.end());
+    db.rpush(tokens[1] , values);
     ssize_t len = db.llen(tokens[1]);
     return ":" + std::to_string(len) + "\r\n";
 }
@@ -197,8 +200,8 @@ static std::string handleLRem(RedisDatabase &db , const std::vector<std::string>
         return "-Error: LREM requires key, count and value\r\n";
     
     try{
-        int count = std::stoi(tokens[3]);
-        int removed = db.lrem(tokens[1] , tokens[2] , count);
+        int count = std::stoi(tokens[2]);
+        int removed = db.lrem(tokens[1] , tokens[3] , count);
         return ":" + std::to_string(removed) + "\r\n";
     }catch(const std::invalid_argument& e){
         return "-Error: Invalid count value\r\n";

@@ -143,16 +143,22 @@ ssize_t RedisDatabase::llen(const std::string &key){
     }
     return -1; // Key does not exist
 }
-bool RedisDatabase::lpush(const std::string &key , const std::string &value){
+bool RedisDatabase::lpush(const std::string &key , const std::vector<std::string> &values){
     std::lock_guard<std::mutex> lock(db_mutex);
-    // Push value to the front of the list
-    list_store[key].insert(list_store[key].begin(), value);
+    // Push values to the front of the list
+    auto &list = list_store[key];
+    for(auto it = values.rbegin(); it != values.rend(); ++it){
+        list.insert(list.begin(), *it);
+    }
     return true;
 }
-bool RedisDatabase::rpush(const std::string &key , const std::string &value){
+bool RedisDatabase::rpush(const std::string &key , const std::vector<std::string> &values){
     std::lock_guard<std::mutex> lock(db_mutex);
-    // Push value to the back of the list
-    list_store[key].push_back(value);
+    // Push values to the back of the list
+    auto &list = list_store[key];
+    for(const auto &value : values){
+        list.push_back(value);
+    }
     return true;
 }
 bool RedisDatabase::lpop(const std::string &key , std::string &value){
@@ -182,7 +188,7 @@ bool RedisDatabase::lindex(const std::string &key , int &index , std::string &va
     if(it == list_store.end()) return false; // Key does not exist
 
     const auto &list = it->second;
-    int size = list.size();
+    int size = static_cast<int>(list.size());
     if(index < 0) index += size; // Handle negative index
     if(index >= 0 && index < size){
         value = list[index];
@@ -190,7 +196,7 @@ bool RedisDatabase::lindex(const std::string &key , int &index , std::string &va
     }
     return false;
 }
-int RedisDatabase::lrem(const std::string &key , const std::string &value , int count = 0){
+int RedisDatabase::lrem(const std::string &key , const std::string &value , int count){
     std::lock_guard<std::mutex> lock(db_mutex);
     auto it = list_store.find(key);
     if(it == list_store.end()) return 0; // Key does not exist
@@ -232,9 +238,8 @@ bool RedisDatabase::lset(const std::string &key , int &index ,const std::string 
     std::lock_guard<std::mutex> lock(db_mutex);
     auto it = list_store.find(key);
     if(it == list_store.end()) return false; // Key does not exist
-
-    auto list = it->second;
-    int size = list.size();
+    auto &list = it->second;
+    int size = static_cast<int>(list.size());
     if(index < 0) index += size; // Handle negative index
     if(index >= 0 && index < size){
         list[index] = value;
