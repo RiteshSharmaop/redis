@@ -106,6 +106,8 @@ ex:  key(####)
 - **LSET**  
   *Use case:* Update an element at a given position. This might be used in a real-time messaging app where you need to modify a message that is stored in a list.
 
+- **LRANGE**
+  *Use case:* return list in range
 ---
 
 ### Hash Operations
